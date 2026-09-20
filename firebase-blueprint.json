@@ -1,0 +1,203 @@
+{
+  "entities": {
+    "Product": {
+      "title": "Product",
+      "description": "Clothing product entity with multi-variant inventory (size and color)",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string", "maxLength": 150 },
+        "description": { "type": "string", "maxLength": 2000 },
+        "category": { "type": "string" },
+        "subcategory": { "type": "string" },
+        "gender": { "type": "string", "enum": ["men", "women", "boys", "girls", "kids", "unisex"] },
+        "regularPrice": { "type": "number" },
+        "salePrice": { "type": "number" },
+        "images": { "type": "array" },
+        "colors": { "type": "array" },
+        "sizes": { "type": "array" },
+        "variants": { "type": "array" },
+        "fabric": { "type": "string" },
+        "careInstructions": { "type": "string" },
+        "isNewArrival": { "type": "boolean" },
+        "isFeatured": { "type": "boolean" },
+        "isActive": { "type": "boolean" },
+        "rating": { "type": "number" },
+        "reviewCount": { "type": "number" },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["name", "regularPrice", "category", "gender", "variants"]
+    },
+    "Category": {
+      "title": "Category",
+      "description": "Dynamic clothing category",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string", "maxLength": 80 },
+        "nameUrdu": { "type": "string", "maxLength": 80 },
+        "slug": { "type": "string" },
+        "gender": { "type": "string" },
+        "image": { "type": "string" },
+        "isActive": { "type": "boolean" },
+        "order": { "type": "number" }
+      },
+      "required": ["name", "slug", "isActive"]
+    },
+    "Order": {
+      "title": "Order",
+      "description": "Customer clothing order with Cash on Delivery in Lahore",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "orderNumber": { "type": "string" },
+        "userId": { "type": "string" },
+        "customerName": { "type": "string", "maxLength": 100 },
+        "customerEmail": { "type": "string" },
+        "customerPhone": { "type": "string", "maxLength": 20 },
+        "city": { "type": "string" },
+        "area": { "type": "string", "maxLength": 100 },
+        "address": { "type": "string", "maxLength": 300 },
+        "instructions": { "type": "string", "maxLength": 500 },
+        "items": { "type": "array" },
+        "subtotal": { "type": "number" },
+        "deliveryCharges": { "type": "number" },
+        "discount": { "type": "number" },
+        "grandTotal": { "type": "number" },
+        "paymentMethod": { "type": "string", "enum": ["cod"] },
+        "status": { "type": "string", "enum": ["pending", "confirmed", "processing", "shipped", "delivered", "cancelled"] },
+        "statusHistory": { "type": "array" },
+        "riderNote": { "type": "string" },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["orderNumber", "userId", "customerName", "customerPhone", "address", "items", "grandTotal", "status"]
+    },
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "Customer account profile",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "email": { "type": "string" },
+        "displayName": { "type": "string", "maxLength": 100 },
+        "phone": { "type": "string", "maxLength": 20 },
+        "city": { "type": "string" },
+        "area": { "type": "string" },
+        "address": { "type": "string", "maxLength": 300 },
+        "role": { "type": "string", "enum": ["customer", "admin", "owner"] },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["email"]
+    },
+    "Review": {
+      "title": "Review",
+      "description": "Customer review and rating for a product",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "productId": { "type": "string" },
+        "userId": { "type": "string" },
+        "userName": { "type": "string", "maxLength": 80 },
+        "rating": { "type": "number" },
+        "comment": { "type": "string", "maxLength": 1000 },
+        "isApproved": { "type": "boolean" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["productId", "userId", "userName", "rating", "comment"]
+    },
+    "StoreSettings": {
+      "title": "StoreSettings",
+      "description": "Configurable store settings for Lahore delivery, contacts, and thresholds",
+      "type": "object",
+      "properties": {
+        "storeName": { "type": "string" },
+        "tagline": { "type": "string" },
+        "taglineUrdu": { "type": "string" },
+        "whatsappNumber": { "type": "string" },
+        "supportPhone": { "type": "string" },
+        "supportEmail": { "type": "string" },
+        "lahoreDeliveryFee": { "type": "number" },
+        "freeDeliveryThreshold": { "type": "number" },
+        "lowStockThreshold": { "type": "number" },
+        "announcement": { "type": "string" },
+        "announcementUrdu": { "type": "string" },
+        "storeAddress": { "type": "string" }
+      },
+      "required": ["storeName", "lahoreDeliveryFee", "lowStockThreshold"]
+    },
+    "Banner": {
+      "title": "Banner",
+      "description": "Promotional homepage banner",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "titleUrdu": { "type": "string" },
+        "subtitle": { "type": "string" },
+        "subtitleUrdu": { "type": "string" },
+        "ctaText": { "type": "string" },
+        "ctaLink": { "type": "string" },
+        "imageUrl": { "type": "string" },
+        "isActive": { "type": "boolean" },
+        "order": { "type": "number" }
+      },
+      "required": ["title", "imageUrl", "isActive"]
+    },
+    "Coupon": {
+      "title": "Coupon",
+      "description": "Store discount coupon",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "code": { "type": "string", "maxLength": 30 },
+        "discountType": { "type": "string", "enum": ["percentage", "fixed"] },
+        "discountValue": { "type": "number" },
+        "minOrderAmount": { "type": "number" },
+        "isActive": { "type": "boolean" },
+        "expiryDate": { "type": "string" },
+        "usageCount": { "type": "number" }
+      },
+      "required": ["code", "discountType", "discountValue", "isActive"]
+    }
+  },
+  "firestore": {
+    "/products/{productId}": {
+      "schema": "Product",
+      "description": "Clothing product documents"
+    },
+    "/categories/{categoryId}": {
+      "schema": "Category",
+      "description": "Clothing categories"
+    },
+    "/orders/{orderId}": {
+      "schema": "Order",
+      "description": "Customer orders"
+    },
+    "/users/{userId}": {
+      "schema": "UserProfile",
+      "description": "User profile with address and contact"
+    },
+    "/admins/{adminId}": {
+      "schema": "UserProfile",
+      "description": "Authorized administrator records"
+    },
+    "/reviews/{reviewId}": {
+      "schema": "Review",
+      "description": "Product reviews"
+    },
+    "/settings/{settingId}": {
+      "schema": "StoreSettings",
+      "description": "Storewide settings and configuration"
+    },
+    "/banners/{bannerId}": {
+      "schema": "Banner",
+      "description": "Promotional banners"
+    },
+    "/coupons/{couponId}": {
+      "schema": "Coupon",
+      "description": "Store coupons"
+    }
+  }
+}

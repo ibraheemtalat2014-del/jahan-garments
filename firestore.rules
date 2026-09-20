@@ -1,0 +1,106 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Default deny all
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Helper functions
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isAdmin() {
+      return isSignedIn() && (
+        request.auth.token.email == 'ibraheemtalat2014@gmail.com' ||
+        (request.auth.token.email != null && request.auth.token.email.matches('(?i)^ibraheemtalat2014@gmail\\.com$')) ||
+        exists(/databases/$(database)/documents/admins/$(request.auth.uid))
+      );
+    }
+
+    // Products: anyone can read active products, only admins can write (or stock decrement upon checkout)
+    match /products/{productId} {
+      allow read: if true;
+      allow create, delete: if isAdmin();
+      allow update: if isAdmin() || (
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['variants', 'updatedAt'])
+      );
+    }
+
+    // Categories: anyone can read, only admin can manage
+    match /categories/{categoryId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Store settings (Lahore delivery fee, announcement, WhatsApp number, etc.)
+    match /settings/{settingId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Promotional Banners: anyone can read, only admin can manage
+    match /banners/{bannerId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Coupons: logged in users can read to validate code, only admins can manage
+    match /coupons/{couponId} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+
+    // Orders: customers can create orders, track status by order number, and cancel before dispatch. Admins manage all.
+    match /orders/{orderId} {
+      allow read: if true;
+      allow create: if isSignedIn() || request.resource.data.userId != '';
+      allow update: if isAdmin() || (
+        (request.resource.data.status == 'cancelled' || request.resource.data.orderStatus == 'cancelled') &&
+        (
+          resource.data.status in ['pending', 'confirmed', 'processing'] ||
+          resource.data.orderStatus in ['pending', 'confirmed', 'processing']
+        )
+      );
+      allow delete: if isAdmin();
+    }
+
+    // Users: customer profiles. Only the user or admin can read/update. Role cannot be self-assigned.
+    match /users/{userId} {
+      allow read: if isOwner(userId) || isAdmin();
+      allow create: if isOwner(userId) && (
+        !request.resource.data.keys().hasAny(['role']) ||
+        request.resource.data.role == 'customer'
+      );
+      allow update: if (
+        isOwner(userId) &&
+        !request.resource.data.diff(resource.data).affectedKeys().hasAny(['role', 'email'])
+      ) || isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    // Admins registry
+    match /admins/{adminId} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+
+    // Reviews: Anyone can read, logged-in customers can create with their own userId, admins can moderate
+    match /reviews/{reviewId} {
+      allow read: if true;
+      allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
+      allow update: if isAdmin() || (
+        isSignedIn() &&
+        resource.data.userId == request.auth.uid &&
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['rating', 'comment'])
+      );
+      allow delete: if isAdmin() || (isSignedIn() && resource.data.userId == request.auth.uid);
+    }
+  }
+}

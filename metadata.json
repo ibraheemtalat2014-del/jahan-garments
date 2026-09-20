@@ -1,0 +1,6 @@
+{
+  "name": "Jahan Grments",
+  "description": "Complete Pakistani clothing e-commerce platform for Men, Women, Boys, Girls, and Kids with variant inventory and admin portal.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
